@@ -9,7 +9,7 @@
     "build:watch": "tsc --watch ./src/*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run build:watch && nodemon ./dist/index.js",
-    "start:prod": "pm2 monit & pm2 start ./dist/index.js -i max"
+    "start:prod": "pm2 start ./dist/index.js -i max && pm2 monit"
   },
   "keywords": [],
   "author": "",
