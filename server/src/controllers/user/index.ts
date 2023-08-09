@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { prisma } from "../.."
+import { hash } from "bcrypt"
+const SALT_ROUND = process.env.SALT_ROUND
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -7,7 +9,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         const result = await prisma.user.create({
             data: {
                 name,
-                password,
+                password: await hash(password, +SALT_ROUND),
                 email
             }
         })
@@ -27,9 +29,28 @@ export const readUsers = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
-export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+export const readUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params
+        const result = await prisma.user.findFirst({
+            where: {
+                id
+            }
+        })
+        res.status(200).json(result)
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+        console.log("🚀 ~ file: index.ts:49 ~ updateUser ~ user:", user)
+        const { id } = req.params
+
+        if (id !== user.id) return res.send('unauthorized access')
+
         const { name, password, email } = req.body
         const result = await prisma.user.update({
             where: {
@@ -37,7 +58,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
             },
             data: {
                 name,
-                password,
+                password: await hash(password, +SALT_ROUND),
                 email
             }
         })
@@ -55,7 +76,6 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
                 id: id
             }
         })
-        console.log("🚀 ~ file: index.ts:58 ~ deleteUser ~ result:", result)
         res.status(200).json(result)
     } catch (err) {
         next(err)
