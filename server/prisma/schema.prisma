@@ -24,9 +24,10 @@ model Company {
   id             String           @id @default(uuid())
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now())
-  employee       Employee[]
   name           String
-  userId         String
+  address        String?
+  phoneNumber    String?
+  employee       Employee[]
   Inventory      Inventory[]
   SellingChannel SellingChannel[]
   Warehouse      Warehouse[]
@@ -43,10 +44,10 @@ model Employee {
   id            String          @id @default(uuid())
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @default(now())
-  role          String
+  role          String?
   user          User            @relation(fields: [userId], references: [id])
   userId        String
-  Company       Company?        @relation(fields: [companyId], references: [id])
+  company       Company?        @relation(fields: [companyId], references: [id])
   companyId     String?
   PurchaseOrder PurchaseOrder[]
 }
@@ -54,12 +55,12 @@ model Employee {
 model User {
   id        String     @id @default(uuid())
   createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now())
-  email     String     @unique
+  updatedAt DateTime   @updatedAt
   name      String?
+  email     String     @unique
   password  String?
   activity  Activity[]
-  Employee  Employee[]
+  employeer Employee[]
 }
 
 model Inventory {

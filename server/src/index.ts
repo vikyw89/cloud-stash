@@ -1,12 +1,25 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
+import cors from 'cors'
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+const MAX_LIMITER = process.env.API_RATE_LIMIT || 60;
 const app = express()
 
 app.use(express.json())
 const prismaRaw = new PrismaClient()
-const prisma = prismaRaw.$extends({
+
+import rateLimit from 'express-rate-limit'
+
+import { router as controllers } from './controllers';
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: +MAX_LIMITER, // limit each IP to API_RATE_LIMIT requests per windowMs
+    message: 'Too many requests from this IP. Please try again after 15 minutes.'
+})
+ 
+export const prisma = prismaRaw.$extends({
     name: 'activity',
     query: {
         async $allOperations({ operation, model, args, query }) {
@@ -22,22 +35,23 @@ const prisma = prismaRaw.$extends({
 });
 
 
-// ... your REST API routes will go here
-app.get('/users', async (req, res) => {
-    const users = await prisma.user.findMany()
-    res.json(users)
+app.use(cors())
+app.use(express.urlencoded({ extended: true }))
+app.use( limiter)
+app.use('/api', controllers)
+
+
+
+
+
+app.get('*', (req, res) => {
+    return res.status(200).send(`Welcome to cloud-stash server, running in [${process.env.NODE_ENV}] mode`)
 })
 
-app.post('/users', async (req, res) => {
-    const users = await prisma.user.create({
-        data: {
-            email: 'vikyw89@gmail.com',
-            name: 'viky'
-        }
-    })
-    res.json(users)
+app.use((err:any, req:any, res:any, next:any) => {
+    return res.status(err?.errorCode ?? 500).send(err.message)
 })
 
-app.listen(port, () =>
-    console.log(`REST API server ready at: http://localhost:${port}`),
+app.listen(PORT, () =>
+    console.log(`REST API server ready at: http://localhost:${PORT}`),
 )

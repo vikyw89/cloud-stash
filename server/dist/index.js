@@ -3,13 +3,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.prisma = void 0;
 const client_1 = require("@prisma/client");
 const express_1 = __importDefault(require("express"));
-const port = process.env.PORT || 3000;
+const cors_1 = __importDefault(require("cors"));
+const PORT = process.env.PORT || 3000;
+const MAX_LIMITER = process.env.API_RATE_LIMIT || 60;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const prismaRaw = new client_1.PrismaClient();
-const prisma = prismaRaw.$extends({
+const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
+const controllers_1 = require("./controllers");
+const limiter = (0, express_rate_limit_1.default)({
+    windowMs: 15 * 60 * 1000,
+    max: +MAX_LIMITER,
+    message: 'Too many requests from this IP. Please try again after 15 minutes.'
+});
+exports.prisma = prismaRaw.$extends({
     name: 'activity',
     query: {
         async $allOperations({ operation, model, args, query }) {
@@ -23,18 +33,14 @@ const prisma = prismaRaw.$extends({
         },
     },
 });
-// ... your REST API routes will go here
-app.get('/users', async (req, res) => {
-    const users = await prisma.user.findMany();
-    res.json(users);
+app.use((0, cors_1.default)());
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use(limiter);
+app.use('/api', controllers_1.router);
+app.get('*', (req, res) => {
+    return res.status(200).send(`Welcome to cloud-stash server, running in [${process.env.NODE_ENV}] mode`);
 });
-app.post('/users', async (req, res) => {
-    const users = await prisma.user.create({
-        data: {
-            email: 'vikyw89@gmail.com',
-            name: 'viky'
-        }
-    });
-    res.json(users);
+app.use((err, req, res, next) => {
+    return res.status(err?.errorCode ?? 500).send(err.message);
 });
-app.listen(port, () => console.log(`REST API server ready at: http://localhost:${port}`));
+app.listen(PORT, () => console.log(`REST API server ready at: http://localhost:${PORT}`));
