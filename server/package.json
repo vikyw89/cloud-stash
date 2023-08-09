@@ -6,9 +6,9 @@
   "scripts": {
     "prisma": "prisma generate --schema=./prisma/schema.prisma",
     "build": "tsc",
-    "build:watch": "tsc --watch ./src/*",
+    "build:watch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run build:watch && nodemon ./dist/index.js",
+    "dev": "npm run build:watch & nodemon ./dist/index.js",
     "start:prod": "pm2 start ./dist/index.js -i max && pm2 monit"
   },
   "keywords": [],
