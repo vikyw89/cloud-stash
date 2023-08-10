@@ -8,18 +8,21 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "prettier . --write && next lint --fix",
-    "commit": "git pull && npm run lint:fix && git add -A && npx czg"
+    "commit": "npm run lint:fix && git add -A && npx czg"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
     "@types/node": "20.4.9",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
+    "@types/react-redux": "^7.1.25",
     "autoprefixer": "10.4.14",
     "eslint-config-next": "13.4.13",
     "next": "13.4.13",
     "postcss": "8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-redux": "^8.1.2",
     "tailwindcss": "3.3.3"
   },
   "devDependencies": {
