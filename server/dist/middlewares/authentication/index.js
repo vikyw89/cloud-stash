@@ -9,11 +9,11 @@ const SECRET = process.env.JWT_SECRET;
 const authenticateAccessToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || Array.isArray(authHeader))
-        return res.send('no authentication');
+        return res.status(401);
     const token = authHeader.split(" ")[1];
     // check if token exist
     if (!token)
-        return res.send('no authentication');
+        return res.status(401);
     // check if it's verified
     const verifiedToken = jsonwebtoken_1.default.verify(token, SECRET);
     req.user = verifiedToken;
@@ -24,10 +24,10 @@ const authenticateRefreshToken = (req, res, next) => {
     const cookie = req.cookies;
     const refreshToken = cookie.refreshToken;
     if (!refreshToken)
-        return res.send("please sign in");
+        return res.status(401);
     const isAuthenticated = jsonwebtoken_1.default.verify(refreshToken, SECRET);
     if (!isAuthenticated)
-        return res.send("session expired, please sign in");
+        return res.status(401);
     next();
 };
 exports.authenticateRefreshToken = authenticateRefreshToken;

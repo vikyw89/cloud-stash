@@ -17,9 +17,9 @@ const signIn = async (req, res, next) => {
             }
         });
         if (!result)
-            return res.send('invalid username');
+            return res.status(404).send('invalid username');
         if (!(0, bcrypt_1.compare)(password, result.password))
-            return res.send('invalid password');
+            return res.status(406).send('invalid password');
         const user = {
             email,
             id: result.id,
@@ -40,7 +40,7 @@ const signOut = async (req, res, next) => {
         // remove refresh token
         res.cookie("refreshToken", null);
         // delete access token   
-        return res.send(null);
+        return res.status(200).send(null);
     }
     catch (err) {
         next(err);

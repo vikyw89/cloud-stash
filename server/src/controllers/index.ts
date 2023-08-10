@@ -15,10 +15,11 @@ router.get('/account/refreshAccessToken')
 router.post('/user', createUser)
 
 // protected route
-router.use(authenticateRefreshToken, authenticateAccessToken)
+// authenticate refresh and jwt token
+router.use(authenticateRefreshToken)
+router.use(authenticateAccessToken)
+
 router.post('/account/signout', signOut)
-
-
 router.get('/user', readUsers)
 router.get('/user/:id', readUser)
 router.put('/user/:id', updateUser)
