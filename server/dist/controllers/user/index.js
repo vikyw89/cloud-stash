@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.updateUser = exports.readUser = exports.readUsers = exports.createUser = void 0;
 const __1 = require("../..");
 const bcrypt_1 = require("bcrypt");
-const SALT_ROUND = process.env.SALT_ROUND;
+const SALT_ROUND = process.env.SALT_ROUND || 10;
 const createUser = async (req, res, next) => {
     try {
         const { name, password, email } = req.body;

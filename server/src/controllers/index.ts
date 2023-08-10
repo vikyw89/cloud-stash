@@ -3,6 +3,7 @@ import { createUser, deleteUser, readUser, readUsers, updateUser } from "./user"
 import { signIn, signOut } from "./account";
 import { authenticateAccessToken, authenticateRefreshToken } from "../middlewares/authentication";
 
+//@ts-ignore
 const router = new Router()
 
 router.get('/', (req:Request, res:Response) => {

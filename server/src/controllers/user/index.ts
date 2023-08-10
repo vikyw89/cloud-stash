@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import { prisma } from "../.."
 import { hash } from "bcrypt"
-const SALT_ROUND = process.env.SALT_ROUND
+import { User } from "../../templates"
+const SALT_ROUND = process.env.SALT_ROUND || 10
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -45,8 +46,7 @@ export const readUser = async (req: Request, res: Response, next: NextFunction) 
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = req.user
-        console.log("🚀 ~ file: index.ts:49 ~ updateUser ~ user:", user)
+        const user = req.user as User
         const { id } = req.params
 
         if (id !== user.id) return res.send('unauthorized access')
@@ -70,7 +70,11 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const user = req.user as User
         const { id } = req.params
+
+        if (id !== user.id) return res.send('unauthorized access')
+        
         const result = await prisma.user.delete({
             where: {
                 id: id
