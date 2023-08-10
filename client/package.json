@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "prettier . --write && next lint --fix"
+    "lint:fix": "prettier . --write && next lint --fix",
+    "commit": "git pull && npm run lint:fix && git add -A && npx czg"
   },
   "dependencies": {
     "@types/node": "20.4.9",

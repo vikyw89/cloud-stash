@@ -1,7 +1,3 @@
-export default function Page (){
-    return (
-        <main>
-            sign in page
-        </main>
-    )
+export default function Page() {
+  return <main>sign in page</main>;
 }

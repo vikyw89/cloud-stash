@@ -1,7 +1,6 @@
 import SignInButton from "./signInButton";
 
 export default function Home() {
-
   return (
     <main className="z-0">
       <div id="landing-page" className="flex h-screen items-end">
