@@ -3,31 +3,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authenticateRefreshToken = exports.authenticateAccessToken = void 0;
+exports.authenticate = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const SECRET = process.env.JWT_SECRET;
-const authenticateAccessToken = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || Array.isArray(authHeader))
-        return res.status(401);
-    const token = authHeader.split(" ")[1];
-    // check if token exist
-    if (!token)
-        return res.status(401);
-    // check if it's verified
-    const verifiedToken = jsonwebtoken_1.default.verify(token, SECRET);
-    req.user = verifiedToken;
-    next();
+const authenticate = (req, res, next) => {
+    try {
+        // we will compare jwt and cookies, if they aren't the same we will notify user of an account breach
+        const cookie = req.cookies;
+        const refreshToken = cookie.token;
+        const headers = req.headers?.authorization;
+        if (!headers || !refreshToken) {
+            // suggest user to sign in
+            throw new Error('please sign in');
+        }
+        const accessToken = headers && headers.split(" ")[1];
+        if (accessToken !== refreshToken) {
+            // user account is comprommised
+            throw new Error('account is compromised, please change password');
+        }
+        const user = jsonwebtoken_1.default.verify(refreshToken, SECRET);
+        req.user = user;
+        next();
+    }
+    catch (err) {
+        next(err);
+    }
 };
-exports.authenticateAccessToken = authenticateAccessToken;
-const authenticateRefreshToken = (req, res, next) => {
-    const cookie = req.cookies;
-    const refreshToken = cookie.refreshToken;
-    if (!refreshToken)
-        return res.status(401);
-    const isAuthenticated = jsonwebtoken_1.default.verify(refreshToken, SECRET);
-    if (!isAuthenticated)
-        return res.status(401);
-    next();
-};
-exports.authenticateRefreshToken = authenticateRefreshToken;
+exports.authenticate = authenticate;

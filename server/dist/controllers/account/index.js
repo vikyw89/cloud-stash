@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signOut = exports.signIn = void 0;
+exports.emailSignUp = exports.signOut = exports.emailSignIn = void 0;
 const __1 = require("../..");
 const bcrypt_1 = require("bcrypt");
 const authentication_1 = require("../../libs/authentication");
 const COOKIE_DURATION = 2629746000;
-const signIn = async (req, res, next) => {
+const SALT_ROUND = process.env.SALT_ROUND || 10;
+const emailSignIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const result = await __1.prisma.user.findFirst({
@@ -16,29 +17,29 @@ const signIn = async (req, res, next) => {
                 job: true
             }
         });
-        if (!result)
-            return res.status(404).send('invalid username');
-        if (!(0, bcrypt_1.compare)(password, result.password))
-            return res.status(406).send('invalid password');
+        if (!result) {
+            throw new Error('invalid password');
+        }
+        if (!(0, bcrypt_1.compare)(password, result.password)) {
+            throw new Error('invalid password');
+        }
         const user = {
-            email,
+            email: result.email,
             id: result.id,
-            job: result.job
         };
-        const refreshToken = (0, authentication_1.generateRefreshToken)(user);
-        res.cookie("refreshToken", refreshToken, { maxAge: COOKIE_DURATION, httpOnly: true, secure: true });
         const accessToken = (0, authentication_1.generateAccessToken)(user);
-        return res.send(accessToken);
+        res.cookie("token", accessToken, { maxAge: COOKIE_DURATION, httpOnly: true, secure: true });
+        return res.json({ Authorization: `Bearer ${accessToken}` });
     }
     catch (err) {
         next(err);
     }
 };
-exports.signIn = signIn;
+exports.emailSignIn = emailSignIn;
 const signOut = async (req, res, next) => {
     try {
         // remove refresh token
-        res.cookie("refreshToken", null);
+        res.clearCookie('refreshToken');
         // delete access token   
         return res.status(200).send(null);
     }
@@ -47,3 +48,20 @@ const signOut = async (req, res, next) => {
     }
 };
 exports.signOut = signOut;
+const emailSignUp = async (req, res, next) => {
+    try {
+        const { name, password, email } = req.body;
+        const result = await __1.prisma.user.create({
+            data: {
+                name,
+                password: await (0, bcrypt_1.hash)(password, +SALT_ROUND),
+                email
+            }
+        });
+        res.status(200).json(result);
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.emailSignUp = emailSignUp;

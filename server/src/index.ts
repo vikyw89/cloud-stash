@@ -13,6 +13,7 @@ const prismaRaw = new PrismaClient()
 import rateLimit from 'express-rate-limit';
 
 import { router as controllers } from './controllers';
+import { errorHandler } from './libs/error';
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -44,15 +45,13 @@ app.use('/api', controllers)
 
 
 
+app.use(errorHandler)
 
 app.get('*', (req: Request, res: Response) => {
     return res.status(200).send(`Welcome to cloud-stash server, running in [${process.env.NODE_ENV}] mode`)
 })
 
-app.use((err: Error, req: Request, res: Response) => {
-    return res.send(err.message)
-})
 
 app.listen(PORT, () =>
-    console.log(`REST API server ready at: http://localhost:${PORT}`),
+    console.log(`REST API server ready at: ${PORT}`),
 )

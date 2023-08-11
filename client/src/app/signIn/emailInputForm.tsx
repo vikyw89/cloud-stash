@@ -1,8 +1,25 @@
 "use client";
 
+import { signIn, useSignInQuery } from "@/redux/features/api-slice";
 import { useRouter } from "next/navigation";
 
 export default function EmailInputForm() {
+  const { data, isError, isLoading } = useSignInQuery({
+    email: "abcd",
+    password: "12345",
+  });
+  console.log(
+    "🚀 ~ file: emailInputForm.tsx:11 ~ EmailInputForm ~ isLoading:",
+    isLoading,
+  );
+  console.log(
+    "🚀 ~ file: emailInputForm.tsx:11 ~ EmailInputForm ~ isError:",
+    isError,
+  );
+  console.log(
+    "🚀 ~ file: emailInputForm.tsx:11 ~ EmailInputForm ~ data:",
+    data,
+  );
   const router = useRouter();
   const recoverPasswordHandler = () => {
     router.push("/recoverPassword");
@@ -10,9 +27,10 @@ export default function EmailInputForm() {
   const signUpHandler = () => {
     router.push("/signUp");
   };
-  const signInHandler = () => {
+  const signInHandler = async () => {
     // TODO: send sign in to backend, return refresh token and jwt token
     // store token
+    const res = await signIn({ email: "abcd", password: "12345" });
     console.log("signIn");
   };
   return (

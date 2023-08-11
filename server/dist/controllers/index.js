@@ -10,14 +10,13 @@ exports.router = router;
 router.get('/', (req, res) => {
     res.send('api');
 });
-router.post('/account/signin', account_1.signIn);
-router.get('/account/refreshAccessToken');
-router.post('/user', user_1.createUser);
+router.post('/account/emailSignIn', account_1.emailSignIn);
+router.post('/account/emailSignUp', account_1.emailSignUp);
+router.post('/account', account_1.signOut);
 // protected route
 // authenticate refresh and jwt token
-router.use(authentication_1.authenticateRefreshToken);
-router.use(authentication_1.authenticateAccessToken);
-router.post('/account/signout', account_1.signOut);
+router.use(authentication_1.authenticate);
+router.post('/user', user_1.createUser);
 router.get('/user', user_1.readUsers);
 router.get('/user/:id', user_1.readUser);
 router.put('/user/:id', user_1.updateUser);

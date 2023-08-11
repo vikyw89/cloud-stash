@@ -3,31 +3,34 @@ import jwt from 'jsonwebtoken'
 
 const SECRET = process.env.JWT_SECRET as string
 
-export const authenticateAccessToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization
-  if (!authHeader || Array.isArray(authHeader)) return res.status(401)
 
-  const token = authHeader.split(" ")[1]
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // we will compare jwt and cookies, if they aren't the same we will notify user of an account breach
+    const cookie = req.cookies
 
-  // check if token exist
-  if (!token) return res.status(401)
+    const refreshToken = cookie.token
 
-  // check if it's verified
-  const verifiedToken = jwt.verify(token, SECRET)
-  
-  req.user = verifiedToken
-  next()
-}
+    const headers = req.headers?.authorization
 
-export const authenticateRefreshToken = (req: Request, res: Response, next: NextFunction) => {
-  const cookie = req.cookies
-  const refreshToken = cookie.refreshToken
+    if (!headers || !refreshToken) {
+      // suggest user to sign in
+      throw new Error('please sign in')
+    }
 
-  if (!refreshToken) return res.status(401)
+    const accessToken = headers && headers.split(" ")[1]
 
-  const isAuthenticated = jwt.verify(refreshToken, SECRET)
+    if (accessToken !== refreshToken) {
+      // user account is comprommised
+      throw new Error('account is compromised, please change password')
+    }
 
-  if (!isAuthenticated) return res.status(401)
+    const user = jwt.verify(refreshToken, SECRET)
 
-  next()
+    req.user = user
+
+    next()
+  } catch (err) {
+    next(err)
+  }
 }

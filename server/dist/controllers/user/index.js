@@ -51,7 +51,7 @@ const updateUser = async (req, res, next) => {
         const user = req.user;
         const { id } = req.params;
         if (id !== user.id)
-            return res.send('unauthorized access');
+            return res.status(401);
         const { name, password, email } = req.body;
         const result = await __1.prisma.user.update({
             where: {
@@ -75,7 +75,7 @@ const deleteUser = async (req, res, next) => {
         const user = req.user;
         const { id } = req.params;
         if (id !== user.id)
-            return res.send('unauthorized access');
+            return res.status(401);
         const result = await __1.prisma.user.delete({
             where: {
                 id: id

@@ -1,24 +1,24 @@
 import { Request, Response, Router } from "express";
 import { createUser, deleteUser, readUser, readUsers, updateUser } from "./user";
-import { signIn, signOut } from "./account";
-import { authenticateAccessToken, authenticateRefreshToken } from "../middlewares/authentication";
+import { emailSignIn, emailSignUp, signOut } from "./account";
+import { authenticate } from "../middlewares/authentication";
 
 const router = Router()
 
-router.get('/', (req:Request, res:Response) => {
+router.get('/', (req: Request, res: Response) => {
     res.send('api')
 })
 
-router.post('/account/signin', signIn)
-router.get('/account/refreshAccessToken')
-router.post('/user', createUser)
+router.post('/account/emailSignIn', emailSignIn)
+router.post('/account/emailSignUp', emailSignUp)
+router.post('/account', signOut)
 
 // protected route
 // authenticate refresh and jwt token
-router.use(authenticateRefreshToken)
-router.use(authenticateAccessToken)
+router.use(authenticate)
 
-router.post('/account/signout', signOut)
+
+router.post('/user', createUser)
 router.get('/user', readUsers)
 router.get('/user/:id', readUser)
 router.put('/user/:id', updateUser)

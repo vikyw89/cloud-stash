@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../..";
-import { compare } from "bcrypt";
-import { generateAccessToken, generateRefreshToken } from "../../libs/authentication";
-import { User } from "../../templates";
+import { compare, hash } from "bcrypt";
+import { generateAccessToken } from "../../libs/authentication";
+import { User } from "@prisma/client";
 
 const COOKIE_DURATION = 2629746000
+const SALT_ROUND = process.env.SALT_ROUND || 10
 
-export const signIn = async (req: Request, res: Response, next: NextFunction) => {
+export const emailSignIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body
 
@@ -19,32 +20,58 @@ export const signIn = async (req: Request, res: Response, next: NextFunction) =>
             }
         })
 
-        if (!result) return res.status(404).send('invalid username')
-        if (!compare(password, result.password)) return res.status(406).send('invalid password')
+        if (!result) {
+            throw new Error('invalid password')
+        }
+
+        if (!compare(password, result.password)) {
+            throw new Error('invalid password')
+        }
 
         const user = {
-            email,
+            email: result.email,
             id: result.id,
-            job: result.job
-        } as User
-
-        const refreshToken = generateRefreshToken(user)
-        res.cookie("refreshToken", refreshToken, { maxAge: COOKIE_DURATION, httpOnly: true, secure: true });
+        } as Pick<User, "email" | "id">
 
         const accessToken = generateAccessToken(user)
-        return res.send(accessToken)
+
+        res.cookie("token", accessToken, { maxAge: COOKIE_DURATION, httpOnly: true, secure: true });
+
+        return res.json({ Authorization: `Bearer ${accessToken}` })
     } catch (err) {
         next(err)
     }
 }
 
+
 export const signOut = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // remove refresh token
-        res.cookie("refreshToken", null)
+        res.clearCookie('refreshToken')
+
         // delete access token   
         return res.status(200).send(null)
     } catch (err) {
+        next(err)
+    }
+}
+
+
+export const emailSignUp = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name, password, email } = req.body as Pick<User, "name" | "password" | "email">
+
+        const result = await prisma.user.create({
+            data: {
+                name,
+                password: await hash(password, +SALT_ROUND),
+                email
+            }
+        })
+
+        res.status(200).json(result)
+    }
+    catch (err) {
         next(err)
     }
 }
