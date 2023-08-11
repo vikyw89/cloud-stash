@@ -1,0 +1,14 @@
+name: Lint
+on:
+  push
+jobs:
+  deploy:
+    name: lint-prettier-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+            cd client
+            npm i
+            npm run lint
+            npm run build
