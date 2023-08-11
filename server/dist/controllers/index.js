@@ -5,8 +5,7 @@ const express_1 = require("express");
 const user_1 = require("./user");
 const account_1 = require("./account");
 const authentication_1 = require("../middlewares/authentication");
-//@ts-ignore
-const router = new express_1.Router();
+const router = (0, express_1.Router)();
 exports.router = router;
 router.get('/', (req, res) => {
     res.send('api');
