@@ -12,8 +12,7 @@
     "lint:fix": "next lint --fix",
     "format": "npm run lint && npm run prettier",
     "format:fix": "npm run lint:fix && npm run prettier:fix",
-    "precommit": "npm run format:fix",
-    "commit": "npx czg"
+    "precommit": "npm run format:fix"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",

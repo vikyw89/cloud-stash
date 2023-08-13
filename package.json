@@ -1,0 +1,16 @@
+{
+  "name": "cloud-stash",
+  "version": "1.0.0",
+  "description": "a cloud inventory app",
+  "main": "index.js",
+  "scripts": {
+    "test": "cd client && npm run format:fix",
+    "prepare": "husky install"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "czg": "^1.7.1",
+    "husky": "^8.0.0"
+  }
+}
