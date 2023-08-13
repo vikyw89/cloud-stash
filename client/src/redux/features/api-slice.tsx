@@ -12,7 +12,7 @@ export const cloudStashApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "https://cloud-stash.fly.dev/api",
     headers: {
-      Authorization: localStorage["AccessToken"],
+      Authorization: "",
     },
   }),
   endpoints: (builder) => ({

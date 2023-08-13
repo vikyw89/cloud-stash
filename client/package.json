@@ -7,9 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "prettier . --write && next lint --fix",
-    "precommit": "npm run build && npm run lint:fix",
-    "commit": "git add -A && npx czg"
+    "prettier": "prettier . --check",
+    "prettier:fix": "prettier . --write",
+    "lint:fix": "next lint --fix",
+    "format": "npm run lint && npm run prettier",
+    "format:fix": "npm run lint:fix && npm run prettier:fix",
+    "precommit": "npm run format:fix",
+    "commit": "npx czg"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
