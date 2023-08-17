@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, Response } from "express";
+import morgan from 'morgan'
 
 const PORT = process.env.PORT || 3001;
 const MAX_LIMITER = process.env.API_RATE_LIMIT || 60;
@@ -36,16 +37,16 @@ export const prisma = prismaRaw.$extends({
 });
 
 // middlewares
+app.use(morgan('tiny'))
 app.use(express.json())
 app.use(cookieParser());
 app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(limiter)
 
+
 // controller
 app.use('/api', controllers)
-
-
 
 
 
@@ -53,7 +54,9 @@ app.get('*', (req: Request, res: Response) => {
     return res.status(200).send(`Welcome to cloud-stash server, running in [${process.env.NODE_ENV}] mode`)
 })
 
+
 app.use(errorHandler)
+
 
 app.listen(PORT, () =>
 console.log(`REST API server ready at: ${PORT}`),

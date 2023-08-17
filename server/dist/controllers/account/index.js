@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = exports.emailSignUp = exports.signOut = exports.emailSignIn = void 0;
+exports.auth = exports.emailVerification = exports.emailSignUp = exports.signOut = exports.emailSignIn = void 0;
 const __1 = require("../..");
 const bcrypt_1 = require("bcrypt");
 const authentication_1 = require("../../libs/authentication");
 const zod_1 = __importDefault(require("zod"));
 const COOKIE_DURATION = 2629746000;
 const SALT_ROUND = process.env.SALT_ROUND || 10;
+const SIGN_IN_URL = process.env.SIGN_IN_URL || 'http://localhost:3000/signIn';
 const emailSignIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -57,7 +58,7 @@ const emailSignUp = async (req, res, next) => {
         const { name, password, email } = req.body;
         const passwordPattern = new RegExp(String.raw `^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$`);
         const schema = zod_1.default.object({
-            name: zod_1.default.string().max(100),
+            name: zod_1.default.string().max(3).min(1),
             password: zod_1.default.string().max(100).regex(passwordPattern),
             email: zod_1.default.string().email()
         });
@@ -66,24 +67,47 @@ const emailSignUp = async (req, res, next) => {
             password,
             email
         });
-        const result = await __1.prisma.user.create({
+        await __1.prisma.user.create({
             data: {
                 name,
                 password: await (0, bcrypt_1.hash)(password, +SALT_ROUND),
                 email
             }
         });
-        res.status(200).json(result);
+        // send email verification
+        // TODO
+        res.status(200).json({ message: 'check your email' });
     }
     catch (err) {
         next(err);
     }
 };
 exports.emailSignUp = emailSignUp;
+const emailVerification = async (req, res, next) => {
+    try {
+        // get email verifications param,
+        const { id } = req.params;
+        // find user with the same param,
+        // modify user to verified
+        await __1.prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                isVerified: true
+            }
+        });
+        // redirect to website sign in
+        res.status(200).redirect(SIGN_IN_URL);
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.emailVerification = emailVerification;
 const auth = async (req, res, next) => {
     try {
         const result = req.user;
-        console.log("🚀 ~ file: index.ts:99 ~ auth ~ result:", result);
         res.status(200).json(result);
     }
     catch (err) {

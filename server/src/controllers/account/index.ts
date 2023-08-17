@@ -7,6 +7,7 @@ import z from "zod";
 
 const COOKIE_DURATION = 2629746000
 const SALT_ROUND = process.env.SALT_ROUND || 10
+const SIGN_IN_URL = process.env.SIGN_IN_URL || 'http://localhost:3000/signIn'
 
 export const emailSignIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -64,12 +65,12 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
 
         const passwordPattern = new RegExp(
             String.raw`^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$`
-            )
-            
+        )
+
         const schema = z.object({
-            name:z.string().max(100),
-            password:z.string().max(100).regex(passwordPattern),
-            email:z.string().email()
+            name: z.string().max(3).min(1),
+            password: z.string().max(100).regex(passwordPattern),
+            email: z.string().email()
         })
 
         schema.parse({
@@ -77,8 +78,8 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
             password,
             email
         })
-        
-        const result = await prisma.user.create({
+
+        await prisma.user.create({
             data: {
                 name,
                 password: await hash(password, +SALT_ROUND),
@@ -86,7 +87,33 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
             }
         })
 
-        res.status(200).json(result)
+        // send email verification
+        // TODO
+        res.status(200).json({ message: 'check your email' })
+    }
+    catch (err) {
+        next(err)
+    }
+}
+
+export const emailVerification = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // get email verifications param,
+        const { id } = req.params
+
+        // find user with the same param,
+        // modify user to verified
+        await prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                isVerified: true
+            }
+        })
+
+        // redirect to website sign in
+        res.status(200).redirect(SIGN_IN_URL)
     }
     catch (err) {
         next(err)
@@ -96,8 +123,6 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const result = req.user
-        console.log("🚀 ~ file: index.ts:99 ~ auth ~ result:", result)
-
         res.status(200).json(result)
     }
     catch (err) {
