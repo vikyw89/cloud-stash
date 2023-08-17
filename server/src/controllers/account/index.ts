@@ -3,6 +3,7 @@ import { prisma } from "../..";
 import { compare, hash } from "bcrypt";
 import { generateAccessToken } from "../../libs/authentication";
 import { User } from "@prisma/client";
+import z from "zod";
 
 const COOKIE_DURATION = 2629746000
 const SALT_ROUND = process.env.SALT_ROUND || 10
@@ -61,6 +62,22 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
     try {
         const { name, password, email } = req.body as Pick<User, "name" | "password" | "email">
 
+        const passwordPattern = new RegExp(
+            String.raw`^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$`
+            )
+            
+        const schema = z.object({
+            name:z.string().max(100),
+            password:z.string().max(100).regex(passwordPattern),
+            email:z.string().email()
+        })
+
+        schema.parse({
+            name,
+            password,
+            email
+        })
+        
         const result = await prisma.user.create({
             data: {
                 name,
@@ -68,6 +85,18 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
                 email
             }
         })
+
+        res.status(200).json(result)
+    }
+    catch (err) {
+        next(err)
+    }
+}
+
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = req.user
+        console.log("🚀 ~ file: index.ts:99 ~ auth ~ result:", result)
 
         res.status(200).json(result)
     }

@@ -8,14 +8,13 @@ const client_1 = require("@prisma/client");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const MAX_LIMITER = process.env.API_RATE_LIMIT || 60;
 const app = (0, express_1.default)();
-app.use(express_1.default.json());
 const prismaRaw = new client_1.PrismaClient();
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const controllers_1 = require("./controllers");
-const error_1 = require("./libs/error");
+const error_1 = require("./middlewares/error");
 const limiter = (0, express_rate_limit_1.default)({
     windowMs: 15 * 60 * 1000,
     max: +MAX_LIMITER,
@@ -35,13 +34,16 @@ exports.prisma = prismaRaw.$extends({
 //     },
 // },
 });
+// middlewares
+app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use((0, cors_1.default)());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(limiter);
+// controller
 app.use('/api', controllers_1.router);
-app.use(error_1.errorHandler);
 app.get('*', (req, res) => {
     return res.status(200).send(`Welcome to cloud-stash server, running in [${process.env.NODE_ENV}] mode`);
 });
+app.use(error_1.errorHandler);
 app.listen(PORT, () => console.log(`REST API server ready at: ${PORT}`));

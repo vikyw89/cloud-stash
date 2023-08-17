@@ -1,9 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emailSignUp = exports.signOut = exports.emailSignIn = void 0;
+exports.auth = exports.emailSignUp = exports.signOut = exports.emailSignIn = void 0;
 const __1 = require("../..");
 const bcrypt_1 = require("bcrypt");
 const authentication_1 = require("../../libs/authentication");
+const zod_1 = __importDefault(require("zod"));
 const COOKIE_DURATION = 2629746000;
 const SALT_ROUND = process.env.SALT_ROUND || 10;
 const emailSignIn = async (req, res, next) => {
@@ -51,6 +55,17 @@ exports.signOut = signOut;
 const emailSignUp = async (req, res, next) => {
     try {
         const { name, password, email } = req.body;
+        const passwordPattern = new RegExp(String.raw `^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$`);
+        const schema = zod_1.default.object({
+            name: zod_1.default.string().max(100),
+            password: zod_1.default.string().max(100).regex(passwordPattern),
+            email: zod_1.default.string().email()
+        });
+        schema.parse({
+            name,
+            password,
+            email
+        });
         const result = await __1.prisma.user.create({
             data: {
                 name,
@@ -65,3 +80,14 @@ const emailSignUp = async (req, res, next) => {
     }
 };
 exports.emailSignUp = emailSignUp;
+const auth = async (req, res, next) => {
+    try {
+        const result = req.user;
+        console.log("🚀 ~ file: index.ts:99 ~ auth ~ result:", result);
+        res.status(200).json(result);
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.auth = auth;

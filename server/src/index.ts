@@ -3,17 +3,16 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, Response } from "express";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const MAX_LIMITER = process.env.API_RATE_LIMIT || 60;
 const app = express()
 
-app.use(express.json())
 const prismaRaw = new PrismaClient()
 
 import rateLimit from 'express-rate-limit';
 
 import { router as controllers } from './controllers';
-import { errorHandler } from './libs/error';
+import { errorHandler } from './middlewares/error';
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -36,22 +35,26 @@ export const prisma = prismaRaw.$extends({
     // },
 });
 
+// middlewares
+app.use(express.json())
 app.use(cookieParser());
 app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(limiter)
+
+// controller
 app.use('/api', controllers)
 
 
 
 
-app.use(errorHandler)
 
 app.get('*', (req: Request, res: Response) => {
     return res.status(200).send(`Welcome to cloud-stash server, running in [${process.env.NODE_ENV}] mode`)
 })
 
+app.use(errorHandler)
 
 app.listen(PORT, () =>
-    console.log(`REST API server ready at: ${PORT}`),
+console.log(`REST API server ready at: ${PORT}`),
 )
