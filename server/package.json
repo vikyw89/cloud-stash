@@ -7,13 +7,11 @@
     "prisma": "prisma generate --schema=./prisma/schema.prisma",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && npm run lint:fix",
     "dev": "npm run build:watch & nodemon ./dist/index.js",
     "start:prod": "pm2 start ./dist/index.js -i max && pm2 monit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "precommit": "npm run build && npm run lint:fix",
-    "commit": "git add -A && npx czg"
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
