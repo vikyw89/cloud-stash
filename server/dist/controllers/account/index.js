@@ -8,9 +8,13 @@ const __1 = require("../..");
 const bcrypt_1 = require("bcrypt");
 const authentication_1 = require("../../libs/authentication");
 const zod_1 = __importDefault(require("zod"));
+const emailVerification_1 = require("../../libs/emails/emailVerification");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const COOKIE_DURATION = 2629746000;
 const SALT_ROUND = process.env.SALT_ROUND || 10;
 const SIGN_IN_URL = process.env.SIGN_IN_URL || 'http://localhost:3000/signIn';
+const SERVER_BASE_URL = process.env.SERVER_BASE_URL || "http://localhost:3001/api";
+const SECRET = process.env.JWT_SECRET;
 const emailSignIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -67,7 +71,7 @@ const emailSignUp = async (req, res, next) => {
             password,
             email
         });
-        await __1.prisma.user.create({
+        const result = await __1.prisma.user.create({
             data: {
                 name,
                 password: await (0, bcrypt_1.hash)(password, +SALT_ROUND),
@@ -76,6 +80,9 @@ const emailSignUp = async (req, res, next) => {
         });
         // send email verification
         // TODO
+        // GENERATE TOKEN
+        const token = (0, authentication_1.generateAccessToken)({ email: email, id: result.id });
+        await (0, emailVerification_1.sendVerificationEmail)({ recipientAddress: email, url: `${SERVER_BASE_URL}/emailVerification/${token}` });
         res.status(200).json({ message: 'check your email' });
     }
     catch (err) {
@@ -86,12 +93,14 @@ exports.emailSignUp = emailSignUp;
 const emailVerification = async (req, res, next) => {
     try {
         // get email verifications param,
-        const { id } = req.params;
+        const { token } = req.params;
+        // verify token
+        const user = jsonwebtoken_1.default.verify(token, SECRET);
         // find user with the same param,
         // modify user to verified
         await __1.prisma.user.update({
             where: {
-                id: id,
+                id: user.id,
             },
             data: {
                 isVerified: true

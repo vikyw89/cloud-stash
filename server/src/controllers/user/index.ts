@@ -57,7 +57,7 @@ export const readUser = async (req: Request, res: Response, next: NextFunction) 
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = req.user as Pick<User, "id" | "email">
+        const user = res.locals.user as Pick<User,"id"|"email">
 
         const { id } = req.params
 
@@ -85,7 +85,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = req.user as Pick<User, "id" | "email">
+        const user = res.locals.user as Pick<User, "id" | "email">
 
         const { id } = req.params
 

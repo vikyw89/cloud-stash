@@ -48,7 +48,7 @@ const readUser = async (req, res, next) => {
 exports.readUser = readUser;
 const updateUser = async (req, res, next) => {
     try {
-        const user = req.user;
+        const user = res.locals.user;
         const { id } = req.params;
         if (id !== user.id)
             return res.status(401);
@@ -72,7 +72,7 @@ const updateUser = async (req, res, next) => {
 exports.updateUser = updateUser;
 const deleteUser = async (req, res, next) => {
     try {
-        const user = req.user;
+        const user = res.locals.user;
         const { id } = req.params;
         if (id !== user.id)
             return res.status(401);

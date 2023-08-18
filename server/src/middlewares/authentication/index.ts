@@ -1,3 +1,4 @@
+import { User } from "@prisma/client"
 import { Request, Response, NextFunction } from "express"
 import jwt from 'jsonwebtoken'
 
@@ -25,9 +26,9 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
       throw new Error('account is compromised, please change password')
     }
 
-    const user = jwt.verify(refreshToken, SECRET)
+    const user = jwt.verify(refreshToken, SECRET) as Pick<User, "id" | "email">
 
-    req.user = user
+    res.locals.user = user
 
     next()
   } catch (err) {

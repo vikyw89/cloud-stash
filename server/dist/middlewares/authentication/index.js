@@ -22,7 +22,7 @@ const authenticate = (req, res, next) => {
             throw new Error('account is compromised, please change password');
         }
         const user = jsonwebtoken_1.default.verify(refreshToken, SECRET);
-        req.user = user;
+        res.locals.user = user;
         next();
     }
     catch (err) {
