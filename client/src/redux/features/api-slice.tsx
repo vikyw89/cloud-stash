@@ -3,7 +3,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
-import { useAppDispatch } from "@/app/hooks";
 import { setToken } from "./auth-slice";
 
 const BASE_API =
@@ -35,21 +34,12 @@ export const cloudStashApi = createApi({
   }),
   tagTypes: ["account"],
   endpoints: (builder) => ({
-    auth: builder.query<void, Pick<Account, "id" | "email" | "name">>({
+    auth: builder.query<string, Pick<Account, "id" | "email" | "name">>({
       query: () => ({
         url: "/account/emailSignIn",
         method: "GET",
       }),
       providesTags: ["account"],
-      transformResponse(baseQueryReturnValue, meta, arg) {
-        const token = baseQueryReturnValue?.data;
-        console.log(
-          "🚀 ~ file: api-slice.tsx:44 ~ transformResponse ~ baseQueryReturnValue:",
-          baseQueryReturnValue,
-        );
-        setToken(token);
-        return baseQueryReturnValue;
-      },
     }),
     emailSignIn: builder.mutation<void, Pick<Account, "email" | "password">>({
       query: ({ email, password }) => ({
@@ -61,8 +51,9 @@ export const cloudStashApi = createApi({
         },
       }),
       invalidatesTags: ["account"],
-      transformResponse(baseQueryReturnValue, meta, arg) {
-        return baseQueryReturnValue;
+      transformResponse: (response: { data: string }, meta, arg) => {
+        const res = response.data;
+        setToken(res);
       },
     }),
     emailSignUp: builder.mutation<void, Omit<Account, "id">>({
@@ -76,9 +67,6 @@ export const cloudStashApi = createApi({
         },
       }),
       invalidatesTags: ["account"],
-      transformResponse(baseQueryReturnValue, meta, arg) {
-        return baseQueryReturnValue;
-      },
     }),
     signOut: builder.mutation<void, void>({
       query: () => ({
@@ -86,6 +74,9 @@ export const cloudStashApi = createApi({
         method: "POST",
       }),
       invalidatesTags: ["account"],
+      transformResponse: (response: { data: string }, meta, arg) => {
+        setToken("");
+      },
     }),
   }),
 });

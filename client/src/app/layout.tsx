@@ -1,7 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import ReduxProvider from "@/redux/provider";
+import React from "react";
+import ReduxProvider from "../redux/provider";
+
 const roboto = Roboto({
   weight: "400",
   subsets: ["latin"],
@@ -20,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${roboto.className} fixed inset-0 -z-40`}>
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider> {children}</ReduxProvider>
       </body>
     </html>
   );

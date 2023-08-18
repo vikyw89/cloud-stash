@@ -1,6 +1,9 @@
-import { Validate } from "@/libs/validation";
-import { FocusEventHandler, useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { FocusEvent, ChangeEvent } from "react";
+import { Validate } from "../../../libs/validation";
+import React from "react";
 const initialEmailSignUpForm = {
   name: "",
   email: "",
@@ -159,7 +162,7 @@ export default function EmailSignUpForm({ events }: EmailSignUpFormProps) {
           className="input input-bordered w-full max-w-xs bg-opacity-50"
           value={form.password}
           onChange={formHandler}
-          onFocus={focusHandler as FocusEventHandler}
+          onFocus={focusHandler}
         />
         {focusOn === "password" && (
           <div className="pl-2 text-xs text-primary-content">

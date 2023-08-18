@@ -79,10 +79,6 @@ export class Validate {
       passwordConfirmationValidationReport["password confirmation is valid"] =
         true;
     }
-    console.log(
-      "🚀 ~ file: index.tsx:76 ~ Validate ~ passwordConfirmationValidationReport:",
-      passwordConfirmationValidationReport,
-    );
     return passwordConfirmationValidationReport;
   };
 }

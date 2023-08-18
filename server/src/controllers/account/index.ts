@@ -68,7 +68,7 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
         )
 
         const schema = z.object({
-            name: z.string().max(3).min(1),
+            name: z.string().max(100).min(1),
             password: z.string().max(100).regex(passwordPattern),
             email: z.string().email()
         })

@@ -58,7 +58,7 @@ const emailSignUp = async (req, res, next) => {
         const { name, password, email } = req.body;
         const passwordPattern = new RegExp(String.raw `^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$`);
         const schema = zod_1.default.object({
-            name: zod_1.default.string().max(3).min(1),
+            name: zod_1.default.string().max(100).min(1),
             password: zod_1.default.string().max(100).regex(passwordPattern),
             email: zod_1.default.string().email()
         });
