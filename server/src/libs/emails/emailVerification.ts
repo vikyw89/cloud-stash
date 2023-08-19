@@ -2,18 +2,13 @@ import nodemailer from 'nodemailer'
 
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.office365.com',
+    service: "gmail",
+    host: "smtp.gmail.com",
     port: 587,
-    tls: {
-        minDHSize: 512,
-        minVersion: 'TLSv1',
-        maxVersion: 'TLSv1.3',
-        ciphers: 'ALL',
-    },
+    secure: false,
     logger: true,
     debug: true, // include SMTP traffic in the logs
     auth: {
-        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
         user: process.env.NODE_MAILER_EMAIL,
         pass: process.env.NODE_MAILER_PASSWORD
     }
@@ -27,8 +22,7 @@ export async function sendVerificationEmail({ recipientAddress, url }: { recipie
         to: `${recipientAddress}`, // list of receivers
         subject: "Verify your registration ✔", // Subject line
         text: `go to this link to finish registration ${url}`, // plain text body
-        html: `<p>Go to this link to finish registration</p>
-        <button href="${url}">Verify</button>
+        html: `<h1>Go to this link to finish registration</h1>
         ${url}
         `, // html body
     });

@@ -8,10 +8,6 @@ export const Notifications = ({ data }: NotificationsProps) => {
       {data.map((v: Notification, i: Key) => {
         const alertType =
           NOTIFICATION_STATUS[v.status as keyof typeof NOTIFICATION_STATUS];
-        console.log(
-          "🚀 ~ file: index.tsx:11 ~ {data.map ~ alertType:",
-          alertType,
-        );
         return (
           <div key={i} className={`alert ${alertType}`}>
             <span>{v.message}</span>

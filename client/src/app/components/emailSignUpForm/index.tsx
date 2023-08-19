@@ -11,7 +11,7 @@ const initialEmailSignUpForm = {
   confirmation: "",
 };
 
-export type initialEmailSignUpForm = typeof initialEmailSignUpForm;
+export type InitialEmailSignUpForm = typeof initialEmailSignUpForm;
 
 const initialEmailSignUpHint = {
   email: Validate.email(),
@@ -34,7 +34,7 @@ export type EmailSignUpFormProps = {
     recoverPasswordHandler: () => void;
     signInHandler: () => void;
     signUpHandler: (
-      form: initialEmailSignUpForm,
+      form: InitialEmailSignUpForm,
       e: React.MouseEvent<HTMLButtonElement>,
     ) => Promise<void>;
   };

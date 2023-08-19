@@ -5,7 +5,7 @@ import { z } from "zod";
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner
-        res.status(400).json({ message: 'invalid request !', detail: { ...err, ref: 'https://www.prisma.io/docs/reference/api-reference/error-reference#error-codes' } })
+        res.status(400).json({ message: 'invalid input !', detail: { ...err, ref: 'https://www.prisma.io/docs/reference/api-reference/error-reference#error-codes' } })
     }
 
     else if (err instanceof z.ZodError) {
