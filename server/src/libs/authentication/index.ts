@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, { Jwt } from 'jsonwebtoken'
 import { User } from '@prisma/client'
 
 const SECRET = process.env.JWT_SECRET as string

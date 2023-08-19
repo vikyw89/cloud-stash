@@ -8,12 +8,12 @@ const authentication_1 = require("../middlewares/authentication");
 const router = (0, express_1.Router)();
 exports.router = router;
 router.get('/', (req, res) => {
-    res.send('api');
+    res.json('api');
 });
 router.post('/account/emailSignIn', account_1.emailSignIn);
 router.post('/account/emailSignUp', account_1.emailSignUp);
 router.post('/account', account_1.signOut);
-router.get('/account/emailVerification', account_1.emailVerification);
+router.get('/account/emailVerification/:token', account_1.emailVerification);
 // protected route
 // authenticate refresh and jwt token
 router.use(authentication_1.authenticate);

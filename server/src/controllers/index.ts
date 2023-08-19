@@ -6,13 +6,13 @@ import { authenticate } from "../middlewares/authentication";
 const router = Router()
 
 router.get('/', (req: Request, res: Response) => {
-    res.send('api')
+    res.json('api')
 })
 
 router.post('/account/emailSignIn', emailSignIn)
 router.post('/account/emailSignUp', emailSignUp)
 router.post('/account', signOut)
-router.get('/account/emailVerification', emailVerification)
+router.get('/account/emailVerification/:token', emailVerification)
 
 // protected route
 // authenticate refresh and jwt token

@@ -31,11 +31,19 @@ export const emailSignIn = async (req: Request, res: Response, next: NextFunctio
         if (!result) {
             throw new Error('invalid password')
         }
-
+        
         if (!compare(password, result.password)) {
             throw new Error('invalid password')
         }
-
+        
+        // if not activated yet, resend token through email
+        if (result.isVerified === false){
+            const token = generateAccessToken({ email: email, id: result.id })
+            
+            await sendVerificationEmail({ recipientAddress: email, url: `${SERVER_BASE_URL}/account/emailVerification/${token}` })
+            res.status(200).json({ message: 'check your email' })
+        }
+        
         const user = {
             email: result.email,
             id: result.id,
@@ -98,7 +106,7 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
         // GENERATE TOKEN
         const token = generateAccessToken({ email: email, id: result.id })
 
-        await sendVerificationEmail({ recipientAddress: email, url: `${SERVER_BASE_URL}/emailVerification/${token}` })
+        await sendVerificationEmail({ recipientAddress: email, url: `${SERVER_BASE_URL}/account/emailVerification/${token}` })
         res.status(200).json({ message: 'check your email' })
     }
     catch (err) {
@@ -110,12 +118,19 @@ export const emailVerification = async (req: Request, res: Response, next: NextF
     try {
         // get email verifications param,
         const { token } = req.params
+        res.locals.token = token
 
         // verify token
-        const user = jwt.verify(token, SECRET) as Pick<User, "id" | "email">
+        const data = jwt.decode(token)
 
+        if (typeof data === "string" || !data) {
+            throw new Error("invalid token")
+        }
+
+        const user = data.user as Pick<User, "id" | "email">
         // find user with the same param,
         // modify user to verified
+
         await prisma.user.update({
             where: {
                 id: user.id,

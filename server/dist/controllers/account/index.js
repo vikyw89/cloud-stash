@@ -32,6 +32,12 @@ const emailSignIn = async (req, res, next) => {
         if (!(0, bcrypt_1.compare)(password, result.password)) {
             throw new Error('invalid password');
         }
+        // if not activated yet, resend token through email
+        if (result.isVerified === false) {
+            const token = (0, authentication_1.generateAccessToken)({ email: email, id: result.id });
+            await (0, emailVerification_1.sendVerificationEmail)({ recipientAddress: email, url: `${SERVER_BASE_URL}/account/emailVerification/${token}` });
+            res.status(200).json({ message: 'check your email' });
+        }
         const user = {
             email: result.email,
             id: result.id,
@@ -82,7 +88,7 @@ const emailSignUp = async (req, res, next) => {
         // TODO
         // GENERATE TOKEN
         const token = (0, authentication_1.generateAccessToken)({ email: email, id: result.id });
-        await (0, emailVerification_1.sendVerificationEmail)({ recipientAddress: email, url: `${SERVER_BASE_URL}/emailVerification/${token}` });
+        await (0, emailVerification_1.sendVerificationEmail)({ recipientAddress: email, url: `${SERVER_BASE_URL}/account/emailVerification/${token}` });
         res.status(200).json({ message: 'check your email' });
     }
     catch (err) {
@@ -94,8 +100,13 @@ const emailVerification = async (req, res, next) => {
     try {
         // get email verifications param,
         const { token } = req.params;
+        res.locals.token = token;
         // verify token
-        const user = jsonwebtoken_1.default.verify(token, SECRET);
+        const data = jsonwebtoken_1.default.decode(token);
+        if (typeof data === "string" || !data) {
+            throw new Error("invalid token");
+        }
+        const user = data.user;
         // find user with the same param,
         // modify user to verified
         await __1.prisma.user.update({

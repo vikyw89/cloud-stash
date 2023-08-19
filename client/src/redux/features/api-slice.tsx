@@ -2,8 +2,10 @@
 "use client";
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "../store";
+import { RootState, store } from "../store";
 import { setToken } from "./auth-slice";
+import { addNotification, removeNotification } from "./notif-slice";
+import { Notification } from "@/libs/types";
 
 const BASE_API =
   process.env.NEXT_PUBLIC_BASE_API ?? "https://cloud-stash.fly.dev/api";
@@ -56,7 +58,7 @@ export const cloudStashApi = createApi({
         setToken(res);
       },
     }),
-    emailSignUp: builder.mutation<void, Omit<Account, "id">>({
+    emailSignUp: builder.mutation<Notification, Omit<Account, "id">>({
       query: ({ name, email, password }) => ({
         url: "/account/emailSignUp",
         method: "POST",
@@ -67,6 +69,22 @@ export const cloudStashApi = createApi({
         },
       }),
       invalidatesTags: ["account"],
+      transformResponse: (baseQueryReturnValue: Notification, meta, arg) => {
+        console.log(
+          "🚀 ~ file: api-slice.tsx:73 ~ baseQueryReturnValue:",
+          baseQueryReturnValue,
+        );
+        store.dispatch(
+          addNotification({
+            message: baseQueryReturnValue.message,
+            status: 200,
+          }),
+        );
+        setTimeout(() => {
+          store.dispatch(removeNotification());
+        }, 10000);
+        return baseQueryReturnValue;
+      },
     }),
     signOut: builder.mutation<void, void>({
       query: () => ({
