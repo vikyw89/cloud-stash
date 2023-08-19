@@ -1,11 +1,7 @@
-import { Prisma, User } from "@prisma/client"
-import { NextFunction, Request, Response } from "express"
+import { Prisma } from "@prisma/client";
+import { NextFunction, Request, Response } from "express";
+import jwt from 'jsonwebtoken';
 import { z } from "zod";
-import jwt from 'jsonwebtoken'
-import { sendVerificationEmail } from "../../libs/emails/emailVerification";
-import { generateAccessToken } from "../../libs/authentication";
-
-const SERVER_BASE_URL = process.env.SERVER_BASE_URL
 
 export async function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
     switch (true) {

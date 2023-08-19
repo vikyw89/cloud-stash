@@ -6,13 +6,11 @@ import { User } from "@prisma/client";
 import z from "zod";
 import { sendVerificationEmail } from "../../libs/emails/emailVerification";
 import jwt from 'jsonwebtoken'
-import { AuthenticatedRequest } from "../../libs/types";
 
 const COOKIE_DURATION = 2629746000
 const SALT_ROUND = process.env.SALT_ROUND || 10
 const SIGN_IN_URL = process.env.SIGN_IN_URL || 'http://localhost:3000/signIn'
 const SERVER_BASE_URL = process.env.SERVER_BASE_URL || "http://localhost:3001/api"
-const SECRET = process.env.JWT_SECRET as string
 
 
 export const emailSignIn = async (req: Request, res: Response, next: NextFunction) => {
@@ -142,16 +140,6 @@ export const emailVerification = async (req: Request, res: Response, next: NextF
 
         // redirect to website sign in
         res.status(200).redirect(SIGN_IN_URL)
-    }
-    catch (err) {
-        next(err)
-    }
-}
-
-export const auth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-        const result = req.user
-        res.status(200).json(result)
     }
     catch (err) {
         next(err)

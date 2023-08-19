@@ -7,11 +7,11 @@
     "prisma": "prisma generate --schema=./prisma/schema.prisma",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "test": "npm run build && npm run lint:fix",
+    "test": "npm run build && npm run format:fix",
     "dev": "npm run build:watch & nodemon ./dist/index.js",
     "start:prod": "pm2 start ./dist/index.js -i max && pm2 monit",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "format": "eslint .",
+    "format:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",

@@ -5,9 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorHandler = void 0;
 const client_1 = require("@prisma/client");
-const zod_1 = require("zod");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const SERVER_BASE_URL = process.env.SERVER_BASE_URL;
+const zod_1 = require("zod");
 async function errorHandler(err, req, res, next) {
     switch (true) {
         case err instanceof client_1.Prisma.PrismaClientKnownRequestError: {

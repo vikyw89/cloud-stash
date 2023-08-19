@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = exports.emailVerification = exports.emailSignUp = exports.signOut = exports.emailSignIn = void 0;
+exports.emailVerification = exports.emailSignUp = exports.signOut = exports.emailSignIn = void 0;
 const __1 = require("../..");
 const bcrypt_1 = require("bcrypt");
 const authentication_1 = require("../../libs/authentication");
@@ -14,7 +14,6 @@ const COOKIE_DURATION = 2629746000;
 const SALT_ROUND = process.env.SALT_ROUND || 10;
 const SIGN_IN_URL = process.env.SIGN_IN_URL || 'http://localhost:3000/signIn';
 const SERVER_BASE_URL = process.env.SERVER_BASE_URL || "http://localhost:3001/api";
-const SECRET = process.env.JWT_SECRET;
 const emailSignIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -125,13 +124,3 @@ const emailVerification = async (req, res, next) => {
     }
 };
 exports.emailVerification = emailVerification;
-const auth = async (req, res, next) => {
-    try {
-        const result = req.user;
-        res.status(200).json(result);
-    }
-    catch (err) {
-        next(err);
-    }
-};
-exports.auth = auth;
