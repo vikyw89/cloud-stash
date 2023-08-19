@@ -6,10 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendVerificationEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const transporter = nodemailer_1.default.createTransport({
-    host: "smtp.office365.com",
+    host: 'smtp.office365.com',
     port: 587,
-    secure: true,
-    requireTLS: true,
+    tls: {
+        minDHSize: 512,
+        minVersion: 'TLSv1',
+        maxVersion: 'TLSv1.3',
+        ciphers: 'ALL',
+    },
+    logger: true,
+    debug: true,
     auth: {
         // TODO: replace `user` and `pass` values from <https://forwardemail.net>
         user: process.env.NODE_MAILER_EMAIL,

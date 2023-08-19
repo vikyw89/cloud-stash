@@ -3,6 +3,7 @@ import { cloudStashApi } from "./features/api-slice";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import { authSlice } from "./features/auth-slice";
 import { notifSlice } from "./features/notif-slice";
+import { rtkQueryErrorLogger } from "./middlewares/errorHandler";
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,9 @@ export const store = configureStore({
     notif: notifSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(cloudStashApi.middleware),
+    getDefaultMiddleware()
+      .concat(cloudStashApi.middleware)
+      .concat(rtkQueryErrorLogger),
 });
 
 setupListeners(store.dispatch);

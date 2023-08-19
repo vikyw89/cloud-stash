@@ -1,11 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-
-export type Notification = {
-  message: string;
-  status: number;
-};
+import { Notification } from "@/libs/types";
 
 const initialState = [] as Array<Notification>;
 
@@ -14,12 +10,17 @@ export const notifSlice = createSlice({
   initialState,
   reducers: {
     addNotification: (state, action: PayloadAction<Notification>) => {
-      state = [...state, action.payload];
+      state.push(action.payload);
+      return state;
+    },
+    removeNotification: (state) => {
+      state.shift();
+      return state;
     },
   },
 });
 
-export const { addNotification } = notifSlice.actions;
+export const { addNotification, removeNotification } = notifSlice.actions;
 
 export const selectNotif = (state: RootState) => state.notif;
 
