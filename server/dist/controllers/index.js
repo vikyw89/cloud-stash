@@ -15,8 +15,9 @@ router.post('/account/emailSignUp', account_1.emailSignUp);
 router.post('/account', account_1.signOut);
 router.get('/account/emailVerification/:token', account_1.emailVerification);
 // protected route
-// authenticate refresh and jwt token
-router.use(authentication_1.authenticate);
+// authenticate refresh and access token
+router.use(authentication_1.authenticateRefreshToken);
+router.use(authentication_1.authenticateAccessToken);
 router.post('/user', user_1.createUser);
 router.get('/user', user_1.readUsers);
 router.get('/user/:id', user_1.readUser);

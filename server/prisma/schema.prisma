@@ -53,15 +53,16 @@ model Employee {
 }
 
 model User {
-  id         String     @id @default(uuid())
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  isVerified Boolean?    @default(false)
-  name       String?
-  email      String     @unique
-  password   String
-  activity   Activity[]
-  job        Employee[]
+  id           String     @id @default(uuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  isVerified   Boolean?   @default(false)
+  refreshToken String?
+  name         String?
+  email        String     @unique
+  password     String
+  activity     Activity[]
+  job          Employee[]
 }
 
 model Inventory {
