@@ -136,7 +136,6 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
     try {
 
         const { name, password, email } = req.body as Pick<User, "name" | "password" | "email">
-
         const passwordPattern = new RegExp(
             String.raw`^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$`
         )
@@ -160,7 +159,7 @@ export const emailSignUp = async (req: Request, res: Response, next: NextFunctio
                 email,
             }
         })
-
+        
         // send email verification
         const tokenPayload = {
             email: dbResult.email,

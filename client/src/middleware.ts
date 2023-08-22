@@ -6,7 +6,10 @@ export function middleware(request: NextRequest) {
   const stores = store.getState();
 
   // rewrite to render log in component if not signed in
-  if (request.nextUrl.pathname.startsWith("/private") && !stores.auth.token) {
+  if (
+    request.nextUrl.pathname.startsWith("/private") &&
+    !stores.auth.isSignedIn
+  ) {
     return NextResponse.rewrite(new URL("/signIn", request.url));
   }
 }

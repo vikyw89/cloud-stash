@@ -16,7 +16,7 @@ export class Validate {
     return emailValidationReport;
   };
 
-  static passsword = (password = "") => {
+  static password = (password = "") => {
     const passwordValidationReport = {
       "must contain an uppercase": false,
       "must contain a lowercase": false,

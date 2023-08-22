@@ -4,30 +4,22 @@ import { useEffect, useState } from "react";
 import { FocusEvent, ChangeEvent } from "react";
 import { Validate } from "../../../libs/validation";
 import React from "react";
-const initialEmailSignUpForm = {
+import { InitialEmailSignUpFormFocus, InitialEmailSignUpForm } from "@/types";
+
+export const initialEmailSignUpForm = {
   name: "",
   email: "",
   password: "",
   confirmation: "",
 };
 
-export type InitialEmailSignUpForm = typeof initialEmailSignUpForm;
-
-const initialEmailSignUpHint = {
+export const initialEmailSignUpHint = {
   email: Validate.email(),
-  password: Validate.passsword(),
+  password: Validate.password(),
   confirmation: Validate.passwordConfirmation(),
 };
 
-export type initialEmailSignUpHint = typeof initialEmailSignUpHint;
-
-const initialEmailSignUpFormFocus = "name" as
-  | "name"
-  | "email"
-  | "confirmation"
-  | "password";
-
-export type initialEmailSignUpFormFocus = typeof initialEmailSignUpFormFocus;
+const initialEmailSignUpFormFocus = "name";
 
 export type EmailSignUpFormProps = {
   events: {
@@ -47,7 +39,7 @@ export default function EmailSignUpForm({ events }: EmailSignUpFormProps) {
   const [isSignUpButtonEnabled, setIsSignUpButtonEnabled] = useState(false);
 
   const focusHandler = (e: FocusEvent<HTMLInputElement>) => {
-    const value = e.target.name as initialEmailSignUpFormFocus;
+    const value = e.target.name as InitialEmailSignUpFormFocus;
     setFocusOn(value);
   };
 
@@ -72,7 +64,7 @@ export default function EmailSignUpForm({ events }: EmailSignUpFormProps) {
         setHint((p) => ({
           ...p,
           confirmation: Validate.passwordConfirmation(form.password, formValue),
-          password: Validate.passsword(formValue),
+          password: Validate.password(formValue),
         }));
         break;
       }

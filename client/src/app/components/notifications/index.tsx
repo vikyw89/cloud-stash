@@ -1,5 +1,5 @@
 import { NOTIFICATION_STATUS } from "@/libs/status";
-import { Notification, NotificationsProps } from "@/libs/types";
+import { Notification, NotificationsProps } from "@/types";
 import { Key } from "react";
 
 export const Notifications = ({ data }: NotificationsProps) => {
